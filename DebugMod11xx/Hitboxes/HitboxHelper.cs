@@ -47,7 +47,7 @@ public static class HitboxHelper
         GameObject go = new GameObject(TAG)
         {
             layer = t == HitboxType.Other ? MISC_LAYER : REG_LAYER,
-            transform = { parent = c2d.transform }
+            transform = { parent = c2d.transform, localPosition = Vector3.zero, localScale = Vector3.one}
         };
         var renderer = AttachLineRenderer(go, t);
 
@@ -109,7 +109,7 @@ public static class HitboxHelper
         }
         else
         {
-            DebugMod.Instance.LogWarn($"unsupported collider {c2d.GetType()} on {c2d.transform.parent}");
+            DebugMod.Instance.LogWarn($"Unsupported collider {c2d.GetType()} on {c2d.transform.parent}");
         }
     }
     

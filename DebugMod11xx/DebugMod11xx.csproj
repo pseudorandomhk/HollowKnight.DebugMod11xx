@@ -2,7 +2,7 @@
     <PropertyGroup>
         <RootNamespace>DebugMod</RootNamespace>
         <AssemblyTitle>DebugMod - 11xx</AssemblyTitle>
-        <AssemblyVersion>0.1.0.0</AssemblyVersion>
+        <AssemblyVersion>0.1.1.0</AssemblyVersion>
         <Deterministic>true</Deterministic>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <LangVersion>latest</LangVersion>
@@ -10,7 +10,14 @@
     </PropertyGroup>
 
     <!-- Create a LocalBuildProperties.props file which defines HollowKnightFolder (references dir) 
-    and OutputDirectory (where the post-build event sends the dll to) -->
+    and OutputDirectory (where the post-build event sends the dll to), should look like this:
+    <Project>
+        <PropertyGroup>
+            <HollowKnightFolder>..\<path to HK installation>\Managed</HollowKnightFolder>
+            <OutputDirectory>$(HollowKnightFolder)\Mods</OutputDirectory>
+        </PropertyGroup>
+    </Project>     
+    -->
     <Import Project="LocalBuildProperties.props" />
 
     <!-- Same References -->

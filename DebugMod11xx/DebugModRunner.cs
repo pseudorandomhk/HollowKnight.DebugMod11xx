@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DebugMod.Hitboxes;
 using DebugMod.Savestates;
 using GlobalEnums;
@@ -23,27 +24,28 @@ public class DebugModRunner : MonoBehaviour
     private bool showInfo;
 
     private int loadExtension = 1;
-    private int hitboxVisibility;
 
     private float timescale = 1f;
 
     private Vector3 noclipPos;
 
     private SavestateManager savestateManager;
+    private HitboxCameraController hitboxCameraController;
 
     private void Start()
     {
         DebugMod.Instance.LogDebug("Starting debug mod runner");
         InitializeKeybinds();
-
         DebugMod.Instance.AcceptingInput = true;
+        
         try
         {
             savestateManager = this.gameObject.AddComponent<SavestateManager>();
+            hitboxCameraController = this.gameObject.AddComponent<HitboxCameraController>();
         }
         catch (Exception e)
         {
-            DebugMod.Instance.LogError($"Exception while starting savestate manager:\n{e}");
+            DebugMod.Instance.LogError($"Exception while starting component manager:\n{e}");
         }
 
         ModHooks.TakeHealth += damage => infiniteHealth ? 0 : damage;
@@ -52,7 +54,9 @@ public class DebugModRunner : MonoBehaviour
         ModHooks.ColliderCreate += HitboxHelper.AttachHitboxRenderer;
         USceneManager.sceneLoaded += (_, _) => HitboxHelper.AddSceneHitboxRenderers();
 
-        ModHooks.HeroStart += UpdateHitboxVisibility;
+        ModHooks.HeroStart += () =>
+            GameCameras.instance.cameraController.cam.cullingMask &=
+                ~(1 << HitboxHelper.REG_LAYER | 1 << HitboxHelper.MISC_LAYER);
         
         DebugMod.Instance.LogDebug("Finished debug mod runner start");
     }
@@ -107,28 +111,7 @@ public class DebugModRunner : MonoBehaviour
 
     private void CycleHitboxVisibility()
     {
-        hitboxVisibility = (hitboxVisibility + 1) % 3;
-        UpdateHitboxVisibility();
-    }
-
-    private void UpdateHitboxVisibility()
-    {
-        var camera = GameCameras.instance.mainCamera;
-        if (hitboxVisibility == 0)
-        {
-            camera.cullingMask &= ~(1 << HitboxHelper.REG_LAYER | 1 << HitboxHelper.MISC_LAYER);
-        }
-        else if (hitboxVisibility == 1)
-        {
-            int mask = camera.cullingMask;
-            mask |= 1 << HitboxHelper.REG_LAYER;
-            mask &= ~(1 << HitboxHelper.MISC_LAYER);
-            camera.cullingMask = mask;
-        }
-        else
-        {
-            camera.cullingMask |= 1 << HitboxHelper.REG_LAYER | 1 << HitboxHelper.MISC_LAYER;
-        }
+        hitboxCameraController.CycleHitboxVisibility();
     }
 
     private void Update()
@@ -187,8 +170,7 @@ public class DebugModRunner : MonoBehaviour
             || !showInfo)
             return;
 
-        List<string> info = new()
-        {
+        string[] info = {
             "Active scene: " + GameManager.instance.GetSceneNameString(),
             "Bench scene: " + PlayerData.instance.respawnScene,
             "Hero position: " + (Vector2) HeroController.instance.gameObject.transform.position,
@@ -198,6 +180,6 @@ public class DebugModRunner : MonoBehaviour
             "Load extension: " + loadExtension
         };
 
-        GUI.Label(new Rect(0, 0, Screen.width, Screen.height), String.Join("\n", info.ToArray()), DebugMod.Style);
+        GUI.Label(new Rect(0, 0, Screen.width, Screen.height), String.Join("\n", info), DebugMod.Style);
     }
 }
