@@ -48,6 +48,12 @@
             <HintPath>$(HollowKnightFolder)\MMHOOK_Assembly-CSharp.dll</HintPath>
         </Reference>
     </ItemGroup>
+    
+    <ItemGroup>
+      <Content Include="..\README.md">
+        <Link>README.md</Link>
+      </Content>
+    </ItemGroup>
 
     <Target Name="CopyMod" AfterTargets="PostBuildEvent">
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutputDirectory)" SkipUnchangedFiles="true" />
