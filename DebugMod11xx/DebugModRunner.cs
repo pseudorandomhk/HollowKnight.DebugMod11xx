@@ -160,7 +160,8 @@ public class DebugModRunner : MonoBehaviour
             camCtrlTransform.position = new Vector3(hcPos.x, hcPos.y, camCtrlTransform.position.z);
         }
 
-        if (!GameManager.instance.GetField<GameManager, bool>("timeSlowed") && Math.Abs(Time.timeScale - timescale) > 1e-5)
+        if (!GameManager.instance.GetField<GameManager, bool>("timeSlowed") 
+            && Time.timeScale != 0f && Math.Abs(Time.timeScale - timescale) > 1e-5)
             Time.timeScale = timescale;
     }
 
