@@ -155,7 +155,7 @@ public class SavestateManager : MonoBehaviour
 
     private IEnumerator LoadSavestate(bool duped, string savestateName)
     {
-        DebugMod.Instance.LogDebug($"Loading savestate {savestateName}");
+        DebugMod.Instance.LogDebug($"Loading savestate at {savestateName}.json");
         Savestate s;
         try
         {
@@ -204,11 +204,20 @@ public class SavestateManager : MonoBehaviour
                 yield return USceneManager.LoadSceneAsync(s.loadedScenes[i]);
 
         GameManager.instance.cameraCtrl.SetMode(CameraController.CameraMode.FOLLOWING);
+
+        var rb2d = HeroController.instance.gameObject.GetComponent<Rigidbody2D>();
+        rb2d.isKinematic = s.isKinematized;
+        rb2d.velocity = s.heroVelocity;
+        rb2d.gravityScale = s.heroGravityScale;
+        HeroController.instance.SetField("prevGravityScale", s.heroPreviousGravityScale);
+        
+        DebugMod.Instance.LogDebug("Finished loading savestate");
     }
 
     public void CreateSavestate()
     {
         DebugMod.Instance.LogDebug("Creating savestate");
+        var rb2d = HeroController.instance.gameObject.GetComponent<Rigidbody2D>();
         Savestate s = new Savestate
         {
             loadedScenes = Enumerable.Range(0, USceneManager.sceneCount)
@@ -216,7 +225,11 @@ public class SavestateManager : MonoBehaviour
                 .ToArray(),
             heroPosition = HeroController.instance.transform.position,
             hazardRespawn = PlayerData.instance.hazardRespawnLocation,
-            gameData = new SaveGameData(PlayerData.instance, SceneData.instance)
+            gameData = new SaveGameData(PlayerData.instance, SceneData.instance),
+            isKinematized = rb2d.isKinematic,
+            heroVelocity = rb2d.velocity,
+            heroGravityScale = rb2d.gravityScale,
+            heroPreviousGravityScale = HeroController.instance.GetField<HeroController, float>("prevGravityScale")
         };
 
         string fileName = Path.Combine(savestatesFolder,
