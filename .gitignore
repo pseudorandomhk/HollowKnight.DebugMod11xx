@@ -5,6 +5,7 @@
 
 # Repo-specific files
 DebugMod11xx/LocalBuildProperties.props
+DebugMod11xx/DebugMod11xx.zip
 
 # User-specific files
 *.rsuser

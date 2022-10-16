@@ -18,7 +18,7 @@
         </PropertyGroup>
     </Project>     
     -->
-    <Import Project="LocalBuildProperties.props" />
+    <Import Project="LocalBuildProperties.props"/>
 
     <!-- Same References -->
     <ItemGroup>
@@ -48,15 +48,24 @@
             <HintPath>$(HollowKnightFolder)\MMHOOK_Assembly-CSharp.dll</HintPath>
         </Reference>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <Content Include="..\README.md">
-        <Link>README.md</Link>
-      </Content>
+        <Content Include="..\README.md">
+            <Link>README.md</Link>
+        </Content>
     </ItemGroup>
 
     <Target Name="CopyMod" AfterTargets="PostBuildEvent">
-        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutputDirectory)" SkipUnchangedFiles="true" />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutputDirectory)" SkipUnchangedFiles="true"/>
+    </Target>
+
+    <Target Name="MakeReleaseZip" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
+        <MakeDir Directories="$(ProjectDir)Output"/>
+        <Delete Files="$(ProjectDir)/$(TargetName).zip"/>
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)Output"/>
+        <Copy SourceFiles="$(SolutionDir)/README.md" DestinationFolder="$(ProjectDir)Output"/>
+        <ZipDirectory DestinationFile="$(ProjectDir)/$(TargetName).zip" SourceDirectory="$(ProjectDir)Output"/>
+        <RemoveDir Directories="$(ProjectDir)Output"/>
     </Target>
 
 </Project>
