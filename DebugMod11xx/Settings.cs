@@ -1,11 +1,12 @@
 ﻿using System;
-using UnityEngine;
 
 namespace DebugMod;
 
 [Serializable]
 public class Settings
 {
+    public string __VERSION__ = "0.0.0.0";
+    
     public string toggleInfo = "f1";
     public string toggleInfiniteSoul = "f3";
     public string toggleInfiniteHealth = "f2";
@@ -29,4 +30,7 @@ public class Settings
     public string saveSavestate = "[7]";
     public string loadSavestate = "[8]";
     public string loadSavestateDuped = "[9]";
+
+    public string toggleCollision = "[6]";
+    public string toggleDreamgateInvuln = "[4]";
 }

@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace DebugMod;
 
-public class DebugMod : Mod
+public sealed class DebugMod : Mod
 {
     public override string Version => GetType().Assembly.GetName().Version.ToString();
 
@@ -41,6 +41,12 @@ public class DebugMod : Mod
             try
             {
                 settings = JsonUtility.FromJson<Settings>(File.ReadAllText(settingsPath));
+                if (settings.__VERSION__ != Version)
+                {
+                    LogInfo($"Outdated settings from version {settings.__VERSION__}, rewriting file");
+                    settings.__VERSION__ = Version;
+                    WriteSettings(settings);
+                }
                 LogInfo("Successfully loaded settings");
             }
             catch (Exception e)
@@ -69,10 +75,15 @@ public class DebugMod : Mod
 
     private void ResetSettings()
     {
-        settings = new Settings();
+        settings = new Settings { __VERSION__ = Version };
+        WriteSettings(settings);
+    }
+
+    private void WriteSettings(Settings s)
+    {
         try
         {
-            File.WriteAllText(settingsPath, JsonUtility.ToJson(settings, true));
+            File.WriteAllText(settingsPath, JsonUtility.ToJson(s, true));
             LogInfo($"Wrote settings to {settingsPath}");
         }
         catch (Exception e)

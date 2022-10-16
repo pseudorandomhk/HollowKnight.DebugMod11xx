@@ -84,10 +84,30 @@ public class DebugModRunner : MonoBehaviour
             { s.resetTimescale, () => timescale = 1f },
             { s.saveSavestate, () => savestateManager.CreateSavestate() },
             { s.loadSavestate, () => savestateManager.StartSelectState(false) },
-            { s.loadSavestateDuped, () => savestateManager.StartSelectState(true) }
+            { s.loadSavestateDuped, () => savestateManager.StartSelectState(true) },
+            { s.toggleCollision, () => HeroController.instance.GetComponent<Rigidbody2D>().isKinematic = !HeroController.instance.GetComponent<Rigidbody2D>().isKinematic },
+            { s.toggleDreamgateInvuln, ToggleDgateInvuln }
         };
 
         DebugMod.Instance.LogInfo($"Initialized {keybindActions.Count} keybinds");
+    }
+
+    private void ToggleDgateInvuln()
+    {
+        var herobox = HeroController.instance.transform.Find("HeroBox").gameObject;
+
+        if (PlayerData.instance.isInvincible && !herobox.activeSelf)
+        {
+            PlayerData.instance.isInvincible = false;
+            shoudBeInvincible = false;
+            herobox.SetActive(true);
+        }
+        else
+        {
+            PlayerData.instance.isInvincible = true;
+            shoudBeInvincible = true;
+            herobox.SetActive(false);
+        }
     }
 
     private void ToggleNoclip()
