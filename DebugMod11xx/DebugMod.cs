@@ -24,7 +24,6 @@ public sealed class DebugMod : Mod
         Path.Combine(Application.persistentDataPath, "DebugMod11xx.GlobalSettings.json");
 
     internal Settings settings;
-    public bool AcceptingInput { get; internal set; }
 
     public DebugMod() : base("DebugMod")
     {

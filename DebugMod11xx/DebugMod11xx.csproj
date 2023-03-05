@@ -2,7 +2,7 @@
     <PropertyGroup>
         <RootNamespace>DebugMod</RootNamespace>
         <AssemblyTitle>DebugMod - 11xx</AssemblyTitle>
-        <AssemblyVersion>0.1.4.0</AssemblyVersion>
+        <AssemblyVersion>0.1.5.0</AssemblyVersion>
         <Deterministic>true</Deterministic>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <LangVersion>latest</LangVersion>
@@ -18,7 +18,7 @@
         </PropertyGroup>
     </Project>     
     -->
-    <Import Project="LocalBuildProperties.props"/>
+    <Import Project="LocalBuildProperties.props" />
 
     <!-- Same References -->
     <ItemGroup>
@@ -56,16 +56,16 @@
     </ItemGroup>
 
     <Target Name="CopyMod" AfterTargets="PostBuildEvent">
-        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutputDirectory)" SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutputDirectory)" SkipUnchangedFiles="true" />
     </Target>
 
     <Target Name="MakeReleaseZip" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
-        <MakeDir Directories="$(ProjectDir)Output"/>
-        <Delete Files="$(ProjectDir)/$(TargetName).zip"/>
-        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)Output"/>
-        <Copy SourceFiles="$(SolutionDir)/README.md" DestinationFolder="$(ProjectDir)Output"/>
-        <ZipDirectory DestinationFile="$(ProjectDir)/$(TargetName).zip" SourceDirectory="$(ProjectDir)Output"/>
-        <RemoveDir Directories="$(ProjectDir)Output"/>
+        <MakeDir Directories="$(ProjectDir)Output" />
+        <Delete Files="$(ProjectDir)/$(TargetName).zip" />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)Output" />
+        <Copy SourceFiles="$(SolutionDir)/README.md" DestinationFolder="$(ProjectDir)Output" />
+        <ZipDirectory DestinationFile="$(ProjectDir)/$(TargetName).zip" SourceDirectory="$(ProjectDir)Output" />
+        <RemoveDir Directories="$(ProjectDir)Output" />
     </Target>
 
 </Project>

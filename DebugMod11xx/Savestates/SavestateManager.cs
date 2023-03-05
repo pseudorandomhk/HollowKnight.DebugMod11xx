@@ -138,7 +138,7 @@ public class SavestateManager : MonoBehaviour
 
         if (GameManager.instance.IsGamePaused())
         {
-            DebugMod.Instance.AcceptingInput = false;
+            DebugModRunner.Instance.AcceptingInput = false;
             LoadSavestateNames();
             GameManager.instance.inputHandler.acceptingInput = false;
             EventSystem.current.sendNavigationEvents = false;
@@ -210,7 +210,10 @@ public class SavestateManager : MonoBehaviour
         rb2d.velocity = s.heroVelocity;
         rb2d.gravityScale = s.heroGravityScale;
         HeroController.instance.SetField("prevGravityScale", s.heroPreviousGravityScale);
-        
+
+        PlayerData.instance.isInvincible = s.isDgateInvuln;
+        Util.GetHeroBox().SetActive(!s.isDgateInvuln);
+
         DebugMod.Instance.LogDebug("Finished loading savestate");
     }
 
@@ -229,7 +232,8 @@ public class SavestateManager : MonoBehaviour
             isKinematized = rb2d.isKinematic,
             heroVelocity = rb2d.velocity,
             heroGravityScale = rb2d.gravityScale,
-            heroPreviousGravityScale = HeroController.instance.GetField<HeroController, float>("prevGravityScale")
+            heroPreviousGravityScale = HeroController.instance.GetField<HeroController, float>("prevGravityScale"),
+            isDgateInvuln = PlayerData.instance.isInvincible && !Util.GetHeroBox().activeSelf
         };
 
         string fileName = Path.Combine(savestatesFolder,
@@ -256,7 +260,7 @@ public class SavestateManager : MonoBehaviour
     private void CancelMenuInput()
     {
         DebugMod.Instance.LogDebug("Closing savestate menu");
-        DebugMod.Instance.AcceptingInput = true;
+        DebugModRunner.Instance.AcceptingInput = true;
         UIManager.instance.UIClosePauseMenu();
         GameCameras.instance.ResumeCameraShake();
         GameManager.instance.actorSnapshotUnpaused.TransitionTo(0f);

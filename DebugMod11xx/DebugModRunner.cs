@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DebugMod.Hitboxes;
 using DebugMod.Savestates;
 using GlobalEnums;
@@ -13,6 +12,10 @@ namespace DebugMod;
 
 public class DebugModRunner : MonoBehaviour
 {
+    public static DebugModRunner Instance { get; private set; } = null;
+    
+    public bool AcceptingInput { get; internal set; }
+    
     private Dictionary<string, Action> keybindActions;
     
     private bool infiniteHealth;
@@ -34,10 +37,25 @@ public class DebugModRunner : MonoBehaviour
 
     private void Start()
     {
-        DebugMod.Instance.LogDebug("Starting debug mod runner");
-        InitializeKeybinds();
-        DebugMod.Instance.AcceptingInput = true;
+        if (Instance != null)
+        {
+            DebugMod.Instance.LogWarn("Debug mod runner instantiated multiple times!");
+            return;
+        }
         
+        DebugMod.Instance.LogDebug("Starting debug mod runner");
+        Instance = this;
+        AcceptingInput = true;
+
+        try
+        {
+            InitializeKeybinds();
+        }
+        catch (Exception e)
+        {
+            DebugMod.Instance.LogWarn($"Exception while initializing keybinds:\n{e}");
+        }
+
         try
         {
             savestateManager = this.gameObject.AddComponent<SavestateManager>();
@@ -57,7 +75,20 @@ public class DebugModRunner : MonoBehaviour
         ModHooks.HeroStart += () =>
             GameCameras.instance.cameraController.cam.cullingMask &=
                 ~(1 << HitboxHelper.REG_LAYER | 1 << HitboxHelper.MISC_LAYER);
-        
+
+        On.GameManager.ReturnToMainMenu += (orig, self) =>
+        {
+            var herobox = Util.GetHeroBox();
+            if (PlayerData.instance.isInvincible && !herobox.activeSelf)
+            {
+                PlayerData.instance.isInvincible = false;
+                shoudBeInvincible = false;
+                herobox.SetActive(true);
+            }
+
+            return orig(self);
+        };
+
         DebugMod.Instance.LogDebug("Finished debug mod runner start");
     }
 
@@ -94,20 +125,11 @@ public class DebugModRunner : MonoBehaviour
 
     private void ToggleDgateInvuln()
     {
-        var herobox = HeroController.instance.transform.Find("HeroBox").gameObject;
+        var herobox = Util.GetHeroBox();
+        bool isInvuln = PlayerData.instance.isInvincible && !herobox.activeSelf;
 
-        if (PlayerData.instance.isInvincible && !herobox.activeSelf)
-        {
-            PlayerData.instance.isInvincible = false;
-            shoudBeInvincible = false;
-            herobox.SetActive(true);
-        }
-        else
-        {
-            PlayerData.instance.isInvincible = true;
-            shoudBeInvincible = true;
-            herobox.SetActive(false);
-        }
+        PlayerData.instance.isInvincible = !isInvuln;
+        herobox.SetActive(isInvuln);
     }
 
     private void ToggleNoclip()
@@ -139,7 +161,7 @@ public class DebugModRunner : MonoBehaviour
         if (GameManager.instance == null || GameManager.instance.GetSceneNameString() == Constants.MENU_SCENE)
             return;
         
-        if (DebugMod.Instance.AcceptingInput)
+        if (AcceptingInput)
             foreach (var bind in keybindActions)
                 if (Input.GetKeyDown(bind.Key))
                     bind.Value();
@@ -187,8 +209,7 @@ public class DebugModRunner : MonoBehaviour
 
     private void OnGUI()
     {
-        if (GameManager.instance == null || GameManager.instance.GetSceneNameString() == Constants.MENU_SCENE
-            || !showInfo)
+        if (!showInfo || GameManager.instance == null || GameManager.instance.GetSceneNameString() == Constants.MENU_SCENE)
             return;
 
         string[] info = {
