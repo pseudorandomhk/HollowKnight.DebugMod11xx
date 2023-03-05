@@ -16,7 +16,7 @@ public class DebugModRunner : MonoBehaviour
     
     public bool AcceptingInput { get; internal set; }
     
-    private Dictionary<string, Action> keybindActions;
+    private Dictionary<string, List<Action>> keybindActions;
     
     private bool infiniteHealth;
     private bool infiniteSoul;
@@ -94,33 +94,62 @@ public class DebugModRunner : MonoBehaviour
 
     private void InitializeKeybinds()
     {
+        DebugMod.Instance.LogDebug("Initializing keybinds");
         Settings s = DebugMod.Instance.settings;
-        keybindActions = new Dictionary<string, Action>
+        keybindActions = new Dictionary<string, List<Action>>();
+        var keybindFunctionalities = getFunctionalities();
+        int nBinds = 0;
+        
+        foreach (var keybind in typeof(Settings).GetFields())
         {
-            { s.toggleInfo, () => showInfo = !showInfo },
-            { s.toggleInvincibility, ToggleInvincibility },
-            { s.toggleInfiniteHealth, () => infiniteHealth = !infiniteHealth },
-            { s.toggleInfiniteSoul, () => infiniteSoul = !infiniteSoul },
-            { s.toggleVignette, () => vignetteDisabled = !vignetteDisabled },
-            { s.toggleNoclip, ToggleNoclip },
-            { s.cameraFollow, ToggleCameraFollow },
-            { s.cycleHitboxes, CycleHitboxVisibility},
-            { s.increaseLoadExtension, () => loadExtension++ },
-            { s.decreaseLoadExtension, () => loadExtension-- },
-            { s.zoomIn, () => GameCameras.instance.tk2dCam.ZoomFactor *= 1.05f },
-            { s.zoomOut, () => GameCameras.instance.tk2dCam.ZoomFactor /= 1.05f },
-            { s.resetZoom, () => GameCameras.instance.tk2dCam.ZoomFactor = 1f },
-            { s.increaseTimescale, () => timescale *= 1.05f },
-            { s.decreaseTimescale, () => timescale /= 1.05f },
-            { s.resetTimescale, () => timescale = 1f },
-            { s.saveSavestate, () => savestateManager.CreateSavestate() },
-            { s.loadSavestate, () => savestateManager.StartSelectState(false) },
-            { s.loadSavestateDuped, () => savestateManager.StartSelectState(true) },
-            { s.toggleCollision, () => HeroController.instance.GetComponent<Rigidbody2D>().isKinematic = !HeroController.instance.GetComponent<Rigidbody2D>().isKinematic },
-            { s.toggleDreamgateInvuln, ToggleDgateInvuln }
-        };
+            if (!keybindFunctionalities.ContainsKey(keybind.Name))
+            {
+                DebugMod.Instance.LogDebug($"Skipping bind for settings entry {keybind.Name}");
+                continue;
+            }
 
-        DebugMod.Instance.LogInfo($"Initialized {keybindActions.Count} keybinds");
+            string boundKey = (string)keybind.GetValue(s);
+            if (keybindActions.ContainsKey(boundKey))
+                keybindActions[boundKey].Add(keybindFunctionalities[keybind.Name]);
+            else
+                keybindActions.Add(boundKey, new List<Action>(new[] { keybindFunctionalities[keybind.Name] }));
+            DebugMod.Instance.LogDebug($"{keybind.Name} bound to {boundKey}");
+            nBinds++;
+        }
+
+        DebugMod.Instance.LogInfo($"Initialized {nBinds} keybinds");
+    }
+    
+    private Dictionary<string, Action> getFunctionalities()
+    {
+        return new Dictionary<string, Action>
+        {
+            { "toggleInfo", () => showInfo = !showInfo },
+            { "toggleInvincibility", ToggleInvincibility },
+            { "toggleInfiniteHealth", () => infiniteHealth = !infiniteHealth },
+            { "toggleInfiniteSoul", () => infiniteSoul = !infiniteSoul },
+            { "toggleVignette", () => vignetteDisabled = !vignetteDisabled },
+            { "toggleNoclip", ToggleNoclip },
+            { "cameraFollow", ToggleCameraFollow },
+            { "cycleHitboxes", CycleHitboxVisibility },
+            { "increaseLoadExtension", () => loadExtension++ },
+            { "decreaseLoadExtension", () => loadExtension-- },
+            { "zoomIn", () => GameCameras.instance.tk2dCam.ZoomFactor *= 1.05f },
+            { "zoomOut", () => GameCameras.instance.tk2dCam.ZoomFactor /= 1.05f },
+            { "resetZoom", () => GameCameras.instance.tk2dCam.ZoomFactor = 1f },
+            { "increaseTimescale", () => timescale *= 1.05f },
+            { "decreaseTimescale", () => timescale /= 1.05f },
+            { "resetTimescale", () => timescale = 1f },
+            { "saveSavestate", () => savestateManager.CreateSavestate() },
+            { "loadSavestate", () => savestateManager.StartSelectState(false) },
+            { "loadSavestateDuped", () => savestateManager.StartSelectState(true) },
+            {
+                "toggleCollision",
+                () => HeroController.instance.GetComponent<Rigidbody2D>().isKinematic =
+                    !HeroController.instance.GetComponent<Rigidbody2D>().isKinematic
+            },
+            { "toggleDreamgateInvuln", ToggleDgateInvuln }
+        };
     }
 
     private void ToggleDgateInvuln()
@@ -164,7 +193,8 @@ public class DebugModRunner : MonoBehaviour
         if (AcceptingInput)
             foreach (var bind in keybindActions)
                 if (Input.GetKeyDown(bind.Key))
-                    bind.Value();
+                    foreach (var func in bind.Value)
+                        func();
 
         if (infiniteSoul)
             HeroController.instance.AddMPCharge(999);

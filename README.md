@@ -23,7 +23,7 @@ Change keybindings by editing `<Hollow Knight saves folder>/DebugMod11xx.GlobalS
 - `saveSavestate` - saves the current game state to a file in `<Hollow Knight saves folder>/Savestates11xx`
 - `loadSavestate` - loads a savestate created by `saveSavestate`. If used while not paused, loads the last saved or loaded savestate. If used while paused, shows a menu to search and select from all savestates in `<Hollow Knight saves folder/Savestates11xx` by file name. Use up/down arrow to move selector, enter to select a savestate to load, and escape to cancel
 - `loadSavestateDuped` - loads a savestate with potentially multiple rooms
-- `toggleCollision` - toggles "vanilla noclip", where the knight doesn't interact with collision and isn't affected by gravity
+- `toggleCollision` - toggles "vanilla noclip", where the knight doesn't interact with walls and isn't affected by gravity
 - `toggleDreamgateInvuln` - toggles dreamgate invulnerability, which also prevents geo from being collected
   
   **NOTE**: while this is active, `toggleInvincibility` has no effect
@@ -34,4 +34,4 @@ Change keybindings by editing `<Hollow Knight saves folder>/DebugMod11xx.GlobalS
 This section is for people who want to edit or contribute to the source code for DebugMod11xx
 1. Fork/clone this repo
 2. Create a `LocalBuildProperties.props` file in `DebugMod11xx`. See comments in `DebugMod11xx/DebugMod11xx.csproj` for content and format
-3. Build the solution using an IDE or `dotnet build`. The resulting mod (`DebugMod11xx.dll`) should be copied directly the `Mods` directory in your 11xx HK install
+3. Build the solution using an IDE or `dotnet build`. The resulting mod (`DebugMod11xx.dll`) should be automatically copied into the `Mods` directory in your 11xx HK install
