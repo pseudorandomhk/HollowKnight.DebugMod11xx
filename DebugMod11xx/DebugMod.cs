@@ -43,8 +43,16 @@ public sealed class DebugMod : Mod
                 if (settings.__VERSION__ != Version)
                 {
                     LogInfo($"Outdated settings from version {settings.__VERSION__}, rewriting file");
-                    settings.__VERSION__ = Version;
-                    WriteSettings(settings);
+                    if (settings.__VERSION__.CompareTo("0.1.6.0") < 0)  // detect if stored binds will not be KeyCode enum names
+                    {
+                        LogWarn("The keybind naming convention was changed in DebugMod11xx v0.1.6.0, meaning your current binds have the wrong format and will be reset to the default. Please visit https://docs.unity3d.com/ScriptReference/KeyCode.html and use the names under \"Properties\" to restore your keybinds. Sorry for the inconvenience :(");
+                        ResetSettings();
+                    }
+                    else
+                    {
+                        settings.__VERSION__ = Version;
+                        WriteSettings(settings);
+                    }
                 }
                 LogInfo("Successfully loaded settings");
             }

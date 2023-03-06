@@ -16,7 +16,7 @@ public class DebugModRunner : MonoBehaviour
     
     public bool AcceptingInput { get; internal set; }
     
-    private Dictionary<string, List<Action>> keybindActions;
+    private Dictionary<KeyCode, List<Action>> keybindActions;
     
     private bool infiniteHealth;
     private bool infiniteSoul;
@@ -96,7 +96,7 @@ public class DebugModRunner : MonoBehaviour
     {
         DebugMod.Instance.LogDebug("Initializing keybinds");
         Settings s = DebugMod.Instance.settings;
-        keybindActions = new Dictionary<string, List<Action>>();
+        keybindActions = new Dictionary<KeyCode, List<Action>>();
         var keybindFunctionalities = getFunctionalities();
         int nBinds = 0;
         
@@ -104,11 +104,22 @@ public class DebugModRunner : MonoBehaviour
         {
             if (!keybindFunctionalities.ContainsKey(keybind.Name))
             {
-                DebugMod.Instance.LogDebug($"Skipping bind for settings entry {keybind.Name}");
+                DebugMod.Instance.LogDebug($"No function associated with settings entry {keybind.Name}, skipping");
                 continue;
             }
 
-            string boundKey = (string)keybind.GetValue(s);
+            string keycodeName = (string)keybind.GetValue(s);
+            KeyCode boundKey;
+            try
+            {
+                boundKey = (KeyCode)Enum.Parse(typeof(KeyCode), keycodeName, true);
+            }
+            catch (Exception e)
+            {
+                DebugMod.Instance.LogError($"Unable to parse keycode {keycodeName} for {keybind.Name}:\n{e}\nLeaving unbound");
+                continue;
+            }
+            
             if (keybindActions.ContainsKey(boundKey))
                 keybindActions[boundKey].Add(keybindFunctionalities[keybind.Name]);
             else

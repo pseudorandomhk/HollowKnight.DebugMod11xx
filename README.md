@@ -8,7 +8,7 @@ Ask questions and request features in `#glitched-discussion` in the Hollow Knigh
 3. Play the game
 
 ### Functionality/keybindings
-Change keybindings by editing `<Hollow Knight saves folder>/DebugMod11xx.GlobalSettings.json`. See "Mapping virtual axes to controls" in [this article](https://docs.unity3d.com/Manual/class-InputManager.html) for key naming conventions
+Change keybindings by editing `<Hollow Knight saves folder>/DebugMod11xx.GlobalSettings.json`. See "Properties" in [this article](https://docs.unity3d.com/ScriptReference/KeyCode.html) for key naming conventions
 - `toggleInfo` - toggles game info display in top-left corner
 - `toggleInfiniteSoul` - toggles whether soul is constantly refilled to full
 - `toggleInfiniteHealth` - toggles whether taking damage actually depletes health
