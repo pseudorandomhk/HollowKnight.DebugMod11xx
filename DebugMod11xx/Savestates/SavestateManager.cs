@@ -36,6 +36,21 @@ public class SavestateManager : MonoBehaviour
             Directory.CreateDirectory(savestatesFolder);
             DebugMod.Instance.LogInfo($"Savestates folder not found, creating at {savestatesFolder}");
         }
+
+        if (DebugMod.Instance.settings.deleteTempSavestatesOnStartup)
+        {
+            string[] tempStates = Directory.GetFiles(savestatesFolder, "__TEMP_STATE_*.json");
+            if (tempStates.Length > 0)
+            {
+                DebugMod.Instance.LogInfo($"Deleting {tempStates.Length} temporary savestate file(s)");
+                foreach (string savestate in tempStates)
+                {
+                    DebugMod.Instance.LogDebug($"Deleting savestate {savestate}");
+                    File.Delete(savestate);
+                }
+            }
+        }
+        
         DebugMod.Instance.LogDebug("Finished starting savestate manager");
     }
 
@@ -237,7 +252,7 @@ public class SavestateManager : MonoBehaviour
         };
 
         string fileName = Path.Combine(savestatesFolder,
-            $"{GameManager.instance.GetSceneNameString()}__{DateTime.Now:yyyy-MM-dd_HH-mm-ss}");
+            $"__TEMP_STATE_{GameManager.instance.GetSceneNameString()}__{DateTime.Now:yyyy-MM-dd_HH-mm-ss}");
         for (int i = 0;; i++)
         {
             if (File.Exists($"{fileName}__{i}.json"))

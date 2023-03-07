@@ -2,13 +2,17 @@
 
 Ask questions and request features in `#glitched-discussion` in the Hollow Knight speedrunning discord
 
-### Installation
+## Installation
 1. Install the appropriate modding API for 11xx
 2. Place `DebugMod11xx.dll` in `<HK 11xx>/hollow_knight_Data/Managed/Mods` (create the folder if it doesn't exist already)
 3. Play the game
 
+## Settings
+Settings for DebugMod11xx are stored in `<Hollow Knight saves folder>/DebugMod11xx.GlobalSettings.json`. Edit that file to change the settings, then relaunch the game if needed
+- `deleteTempSavestatesOnStartup` - whether to delete savestates created but not renamed since the last session on game launch
+
 ### Functionality/keybindings
-Change keybindings by editing `<Hollow Knight saves folder>/DebugMod11xx.GlobalSettings.json`. See "Properties" in [this article](https://docs.unity3d.com/ScriptReference/KeyCode.html) for key naming conventions
+Keybindings are also stored in the settings file. See "Properties" in [this article](https://docs.unity3d.com/ScriptReference/KeyCode.html) for key naming conventions
 - `toggleInfo` - toggles game info display in top-left corner
 - `toggleInfiniteSoul` - toggles whether soul is constantly refilled to full
 - `toggleInfiniteHealth` - toggles whether taking damage actually depletes health

@@ -7,6 +7,8 @@ namespace DebugMod;
 public class Settings
 {
     public string __VERSION__ = "0.0.0.0";
+
+    public bool deleteTempSavestatesOnStartup = false;
     
     public string toggleInfo = KeyCode.F1.ToString();
     public string toggleInfiniteSoul = KeyCode.F3.ToString();
