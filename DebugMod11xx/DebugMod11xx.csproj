@@ -2,7 +2,7 @@
     <PropertyGroup>
         <RootNamespace>DebugMod</RootNamespace>
         <AssemblyTitle>DebugMod - 11xx</AssemblyTitle>
-        <AssemblyVersion>0.1.6.1</AssemblyVersion>
+        <AssemblyVersion>0.1.6.2</AssemblyVersion>
         <Deterministic>true</Deterministic>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <LangVersion>latest</LangVersion>
