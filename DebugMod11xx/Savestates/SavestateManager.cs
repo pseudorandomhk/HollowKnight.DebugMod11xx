@@ -23,6 +23,7 @@ public class SavestateManager : MonoBehaviour
     private string query;
     private int selectedSavestateIndex;
     private string lastSavestate;
+    private bool isLoadStateMenuFirstFrame;
 
     private void Start()
     {
@@ -62,7 +63,13 @@ public class SavestateManager : MonoBehaviour
         if (!GameManager.instance.IsGamePaused() && menuState != MenuState.None)
         {
             menuState = MenuState.None;
+            isLoadStateMenuFirstFrame = false;
             DebugMod.Instance.LogWarn("Savestate menu open while game is not paused; closing");
+            return;
+        }
+        if (isLoadStateMenuFirstFrame)
+        {
+            isLoadStateMenuFirstFrame = false;
             return;
         }
 
@@ -157,6 +164,7 @@ public class SavestateManager : MonoBehaviour
             LoadSavestateNames();
             GameManager.instance.inputHandler.acceptingInput = false;
             EventSystem.current.sendNavigationEvents = false;
+            isLoadStateMenuFirstFrame = true;
         } 
         else
         {
