@@ -276,7 +276,7 @@ public class SavestateManager : MonoBehaviour
 
     private void UpdateCurSelection()
     {
-        curSelection = allSavestates.FindAll(s => s.Contains(query));
+        curSelection = allSavestates.FindAll(s => s.ToLowerInvariant().Contains(query.ToLowerInvariant()));
         selectedSavestateIndex = 0;
     }
 
